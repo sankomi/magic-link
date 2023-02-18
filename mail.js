@@ -20,6 +20,17 @@ async function send(to, subject, body) {
 	});
 }
 
+async function sendHtml(to, subject, body) {
+	let info = await transporter.sendMail({
+		from: process.env.MAIL_FROM,
+		//to,
+		to: process.env.TEST_MAIL,
+		subject,
+		html: body,
+	});
+}
+
 module.exports = {
 	send,
+	sendHtml,
 }
