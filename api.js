@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const mail = require("./mail");
-const db = []; //temp
+const db = require("./db");
 const ress = new Map();
 let t = 0; //temp
 
@@ -19,14 +19,14 @@ router.post("/user/create/", async (req, res) => {
 	}
 
 	console.log("adding user to db...");
-	if (db.includes(email)) {
-		console.log("email already used!");
+	const added = await db.addUser(email, name);
+	if (!added.success) {
+		console.log(added.message);
 		return res.json({
 			success: false,
-			message: "email already used!",
+			message: added.message,
 		});
 	}
-	db.push({email, name});
 	console.log("added!");
 	
 	console.log("sending welcome email...");
@@ -41,18 +41,12 @@ router.post("/user/create/", async (req, res) => {
 	console.log("responded!");
 });
 
-function findEmail(email) {
-	for (let i = 0; i < db.length; i++) {
-		if (db[i].email === email) return true;
-	}
-	return false;
-}
-
 router.post("/user/login", async (req, res) => {
 	const email = req.body.email?.trim().toLowerCase();
 
-	console.log("checking if email exists...")
-	if (!findEmail(email)) {
+	console.log("checking if email exists...");
+	const checked = await db.checkEmail(email);
+	if (!checked.success) {
 		console.log("email does not exist!");
 		return res.json({
 			success: false,
