@@ -38,6 +38,7 @@
 							console.log(json);
 							if (json.success) {
 								localStorage.setItem("token", json.token);
+								location.replace("/");
 							}
 						})
 						.catch(console.error)

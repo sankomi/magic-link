@@ -90,6 +90,7 @@ router.get("/user/link", (req, res) => {
 		token,
 		message: "logged in!",
 	});
+	ress.delete(token);
 	console.log("waited!");
 	console.log("logged in!");
 
