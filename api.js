@@ -3,7 +3,7 @@ const router = express.Router();
 
 const mail = require("./mail");
 const db = require("./db");
-const ress = new Map();
+const logins = new Map();
 let t = 0; //temp
 
 router.post("/user/create/", async (req, res) => {
@@ -41,18 +41,19 @@ router.post("/user/create/", async (req, res) => {
 	console.log("responded!");
 });
 
-router.post("/user/login", async (req, res) => {
+router.post("/user/login/", async (req, res) => {
 	const email = req.body.email?.trim().toLowerCase();
 
 	console.log("checking if email exists...");
-	const checked = await db.checkEmail(email);
-	if (!checked.success) {
+	const result = await db.checkEmail(email);
+	if (!result.success) {
 		console.log("email does not exist!");
 		return res.json({
 			success: false,
 			message: "email does not exist!",
 		});
 	}
+	const id = result.id;
 	console.log("checked!");
 
 	console.log("creating token...");
@@ -68,14 +69,20 @@ router.post("/user/login", async (req, res) => {
 	console.log("sent!");
 
 	console.log("waiting for click...");
-	ress.set(token, res);
+	logins.set(token, {
+		res,
+		id,
+		waiting: true,
+		login: false,
+	});
 });
 
-router.get("/user/link", (req, res) => {
+router.get("/user/link/", async (req, res) => {
 	const token = +req.query.token;
 
-	console.log("check if token exists...");
-	if (!ress.has(token)) {
+	console.log("checking if token exists...");
+	const login = logins.get(token) || {};
+	if (!login.waiting) {
 		console.log("token does not exist!");
 		return res.json({
 			success: false,
@@ -84,15 +91,52 @@ router.get("/user/link", (req, res) => {
 	}
 	console.log("checked!");
 
+	console.log("finding username...");
+	const result = await db.findUsername(login.id);
+	const username = result.username || "unnamed";
+	console.log("found!");
+
 	console.log("logging in...");
-	ress.get(token).json({
+	if (!login.res) {
+		console.log("res does not exist!");
+		return res.json({
+			success: false,
+			message: "res does not exist!",
+		});
+	}
+	login.res.json({
 		success: true,
 		token,
+		username,
 		message: "logged in!",
 	});
-	ress.delete(token);
+	login.res = null;
+	login.waiting = false;
+	login.login = true;
 	console.log("waited!");
 	console.log("logged in!");
+
+	console.log("responding to request...");
+	res.json({
+		success: true,
+		message: "logged in!",
+	});
+	console.log("responded!");
+});
+
+router.get("/user/check/", (req, res) => {
+	const token = +req.query.token;
+
+	console.log("checking if logged in...");
+	const login = logins.get(token) || {};
+	if (!login.login) {
+		console.log("not logged in!");
+		return res.json({
+			success: false,
+			message: "not logged in!",
+		});
+	}
+	console.log("checked!");
 
 	console.log("responding to request...");
 	res.json({

@@ -9,6 +9,12 @@
 	</head>
 	<body>
 		<h1>magic link</h1>
-		<p>welcome!</p>
+		<p id="welcome">welcome!</p>
+		<script>
+			{
+				const welcome = document.querySelector("#welcome");
+				welcome.innerText = `welcome, ${sessionStorage.getItem("username")}!`;
+			}
+		</script>
 	</body>
 </html>

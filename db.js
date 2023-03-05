@@ -27,15 +27,34 @@ async function addUser(email, username) {
 
 async function checkEmail(email) {
 	const result = await db.get(
-		"SELECT email FROM users WHERE email = ?1;",
+		"SELECT id FROM users WHERE email = ?1;",
 		[email],
 	);
 
-	if (result) return {success: true, message: "email checked!"};
+	if (result) return {
+		success: true,
+		id: result.id,
+		message: "email checked!",
+	};
 	else return {success: false, message: "email does not exist!"};
+}
+
+async function findUsername(id) {
+	const result = await db.get(
+		"SELECT username FROM users WHERE id = ?1;",
+		[id],
+	);
+
+	if (result) return {
+		success: true,
+		username: result.username,
+		message: "username found!",
+	};
+	else return {success: false, message: "username not found!"};
 }
 
 module.exports = {
 	addUser,
 	checkEmail,
+	findUsername,
 };

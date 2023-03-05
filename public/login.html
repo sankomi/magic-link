@@ -37,6 +37,7 @@
 						.then(json => {
 							console.log(json);
 							if (json.success) {
+								sessionStorage.setItem("username", json.username);
 								sessionStorage.setItem("token", json.token);
 								location.replace("/");
 							}
