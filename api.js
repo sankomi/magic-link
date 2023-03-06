@@ -146,4 +146,107 @@ router.get("/user/check/", (req, res) => {
 	console.log("responded!");
 });
 
+router.get("/text/", async (req, res) => {
+	const token = +req.query.token;
+	
+	console.log("checking if logged in...");
+	const login = logins.get(token) || {};
+	if (!login.login) {
+		console.log("not logged in!");
+		return res.json({
+			success: false,
+			message: "not logged in!",
+		});
+	}
+	console.log("checked!");
+
+	console.log("listing texts...");
+	const id = login.id;
+	const result = await db.listTexts(id);
+	if (!result.success) {
+		return res.json({
+			success: false,
+			message: result.message,
+		});
+	}
+	const texts = result.texts;
+	console.log("listed!");
+
+	console.log("responding to request...");
+	res.json({
+		success: true,
+		texts,
+		message: "listed!",
+	});
+	console.log("responded!");
+});
+
+router.post("/text/add/", async (req, res) => {
+	const token = +req.query.token;
+	
+	console.log("checking if logged in...");
+	const login = logins.get(token) || {};
+	if (!login.login) {
+		console.log("not logged in!");
+		return res.json({
+			success: false,
+			message: "not logged in!",
+		});
+	}
+	console.log("checked!");
+
+	console.log("adding text...");
+	const id = login.id;
+	const text = req.body.text;
+	const result = await db.addText(id, text);
+	if (!result.success) {
+		return res.json({
+			success: false,
+			message: result.message,
+		});
+	}
+	console.log("added!");
+
+	console.log("responding to request...");
+	res.json({
+		success: true,
+		message: "added!",
+	});
+	console.log("responded!");
+});
+
+router.delete("/text/delete/", async (req, res) => {
+	const token = +req.query.token;
+	
+	console.log("checking if logged in...");
+	const login = logins.get(token) || {};
+	if (!login.login) {
+		console.log("not logged in!");
+		return res.json({
+			success: false,
+			message: "not logged in!",
+		});
+	}
+	console.log("checked!");
+
+	console.log("deleting text...");
+	const userId = login.id;
+	const textId = req.body.textId;
+	const result = await db.deleteText(userId, textId);
+	if (!result.success) {
+		return res.json({
+			success: false,
+			message: result.message,
+		});
+	}
+	console.log("deleted!");
+
+	console.log("responding to request...");
+	res.json({
+		success: true,
+		message: "deleted!",
+	});
+	console.log("responded!");
+});
+
 module.exports = router;

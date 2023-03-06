@@ -16,5 +16,99 @@
 				welcome.innerText = `welcome, ${sessionStorage.getItem("username")}!`;
 			}
 		</script>
+
+		<form id="form">
+			<div>
+				<input id="text">
+				<button>add</button>
+			</div>
+		</form>
+		<ul id="texts"></ul>
+		<script>
+			{
+				const texts = document.querySelector("#texts");
+				function addText(id, text) {
+					const li = document.createElement("li");
+					li.appendChild(document.createTextNode(text + " "));
+					texts.appendChild(li);
+					
+					if (id !== 0) {
+						const button = document.createElement("button");
+						button.appendChild(document.createTextNode("delete"));
+						button.addEventListener("click", event => {
+							fetch(
+								`/api/text/delete/?token=${sessionStorage.getItem("token")}`,
+								{
+									method: "DELETE",
+									headers: {
+										"Accept": "application/json",
+										"Content-Type": "application/json",
+									},
+									body: JSON.stringify({
+										textId: id,
+									}),
+								},
+							)
+								.then(res => res.json())
+								.then(json => {
+									if (json.success) {
+										loadTexts();
+									}
+								})
+								.catch(console.error);
+						});
+						li.appendChild(button);
+					}
+				}
+				function emptyTexts() {
+					texts.innerHTML = null;
+				}
+
+				function loadTexts() {
+					fetch(`/api/text/?token=${sessionStorage.getItem("token")}`)
+						.then(res => res.json())
+						.then(json => {
+							emptyTexts();
+							if (json.success && json.texts?.length) {
+								const texts = json.texts;
+								texts.forEach(text => {
+									addText(text.id, text.text);
+								});
+							} else {
+								addText(0, "no texts!");
+							}
+						})
+						.catch(console.error);
+				}
+				loadTexts();
+
+				const form = document.querySelector("#form");
+				const text = document.querySelector("#text");
+				form.addEventListener("submit", event => {
+					event.preventDefault();
+
+					fetch(
+						`/api/text/add/?token=${sessionStorage.getItem("token")}`,
+						{
+							method: "POST",
+							headers: {
+								"Accept": "application/json",
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify({
+								text: text.value,
+							}),
+						},
+					)
+						.then(res => res.json())
+						.then(json => {
+							if (json.success) {
+								loadTexts();
+							}
+						})
+						.catch(console.error);
+				});
+			}
+		</script>
 	</body>
 </html>
