@@ -4,7 +4,7 @@ const router = express.Router();
 const mail = require("./mail");
 const db = require("./db");
 const logins = new Map();
-let t = 0; //temp
+const uuid = require("crypto").randomUUID;
 
 router.post("/user/create/", async (req, res) => {
 	const email = req.body.email?.trim().toLowerCase();
@@ -57,7 +57,7 @@ router.post("/user/login/", async (req, res) => {
 	console.log("checked!");
 
 	console.log("creating token...");
-	let token = t++;
+	const token = uuid();
 	console.log("created!");
 
 	console.log("sending link...");
@@ -78,7 +78,7 @@ router.post("/user/login/", async (req, res) => {
 });
 
 router.get("/user/link/", async (req, res) => {
-	const token = +req.query.token;
+	const token = req.query.token;
 
 	console.log("checking if token exists...");
 	const login = logins.get(token) || {};
@@ -125,7 +125,7 @@ router.get("/user/link/", async (req, res) => {
 });
 
 router.get("/user/check/", (req, res) => {
-	const token = +req.query.token;
+	const token = req.query.token;
 
 	console.log("checking if logged in...");
 	const login = logins.get(token) || {};
@@ -147,7 +147,7 @@ router.get("/user/check/", (req, res) => {
 });
 
 router.get("/text/", async (req, res) => {
-	const token = +req.query.token;
+	const token = req.query.token;
 	
 	console.log("checking if logged in...");
 	const login = logins.get(token) || {};
@@ -182,7 +182,7 @@ router.get("/text/", async (req, res) => {
 });
 
 router.post("/text/add/", async (req, res) => {
-	const token = +req.query.token;
+	const token = req.query.token;
 	
 	console.log("checking if logged in...");
 	const login = logins.get(token) || {};
@@ -216,7 +216,7 @@ router.post("/text/add/", async (req, res) => {
 });
 
 router.delete("/text/delete/", async (req, res) => {
-	const token = +req.query.token;
+	const token = req.query.token;
 	
 	console.log("checking if logged in...");
 	const login = logins.get(token) || {};

@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width; initial-scale=1">
 		<title>magic link</title>
 		<script src="/js/login.js"></script>
+		<style>html {font-family: monospace}</style>
 	</head>
 	<body>
 		<h1>magic link</h1>
@@ -70,6 +71,7 @@
 						.then(json => {
 							emptyTexts();
 							if (json.success && json.texts?.length) {
+								text.value = null;
 								const texts = json.texts;
 								texts.forEach(text => {
 									addText(text.id, text.text);
