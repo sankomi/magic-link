@@ -125,7 +125,7 @@ router.get("/user/link/", async (req, res) => {
 });
 
 router.get("/user/check/", (req, res) => {
-	const token = req.query.token;
+	const token = req.headers.token;
 
 	console.log("checking if logged in...");
 	const login = logins.get(token) || {};
@@ -147,7 +147,7 @@ router.get("/user/check/", (req, res) => {
 });
 
 router.get("/text/", async (req, res) => {
-	const token = req.query.token;
+	const token = req.headers.token;
 	
 	console.log("checking if logged in...");
 	const login = logins.get(token) || {};
@@ -182,7 +182,7 @@ router.get("/text/", async (req, res) => {
 });
 
 router.post("/text/add/", async (req, res) => {
-	const token = req.query.token;
+	const token = req.headers.token;
 	
 	console.log("checking if logged in...");
 	const login = logins.get(token) || {};
@@ -216,7 +216,7 @@ router.post("/text/add/", async (req, res) => {
 });
 
 router.delete("/text/delete/", async (req, res) => {
-	const token = req.query.token;
+	const token = req.headers.token;
 	
 	console.log("checking if logged in...");
 	const login = logins.get(token) || {};

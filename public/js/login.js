@@ -1,7 +1,14 @@
 {
 	const token = sessionStorage.getItem("token");
 	if (token) {
-		fetch(`/api/user/check/?token=${token}`)
+		fetch(
+			"/api/user/check/",
+			{
+				headers: {
+					token,
+				},
+			}
+		)
 			.then(res => res.json())
 			.then(json => {
 				if (!json.success) {

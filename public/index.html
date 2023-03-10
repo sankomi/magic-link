@@ -38,10 +38,11 @@
 						button.appendChild(document.createTextNode("delete"));
 						button.addEventListener("click", event => {
 							fetch(
-								`/api/text/delete/?token=${sessionStorage.getItem("token")}`,
+								"/api/text/delete/",
 								{
 									method: "DELETE",
 									headers: {
+										token: sessionStorage.getItem("token"),
 										"Accept": "application/json",
 										"Content-Type": "application/json",
 									},
@@ -66,7 +67,14 @@
 				}
 
 				function loadTexts() {
-					fetch(`/api/text/?token=${sessionStorage.getItem("token")}`)
+					fetch(
+		   				"/api/text/",
+		   				{
+		   					headers: {
+		   						token: sessionStorage.getItem("token")
+							},
+						},
+					)
 						.then(res => res.json())
 						.then(json => {
 							emptyTexts();
@@ -90,10 +98,11 @@
 					event.preventDefault();
 
 					fetch(
-						`/api/text/add/?token=${sessionStorage.getItem("token")}`,
+						"/api/text/add/",
 						{
 							method: "POST",
 							headers: {
+		   						token: sessionStorage.getItem("token"),
 								"Accept": "application/json",
 								"Content-Type": "application/json",
 							},
